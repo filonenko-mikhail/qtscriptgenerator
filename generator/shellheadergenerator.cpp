@@ -101,11 +101,13 @@ void ShellHeaderGenerator::write(QTextStream &s, const AbstractMetaClass *meta_c
         }
     }
 
-    s << "    ~" << shellClassName(meta_class) << "()";
-    if (!meta_class->destructorException().isEmpty())
+    if (!(meta_class->attributes() & AbstractMetaAttributes::FinalInCpp)) {
+      s << "    ~" << shellClassName(meta_class) << "()";
+      if (!meta_class->destructorException().isEmpty())
         s << " " << meta_class->destructorException();
-    s << ";" << endl;
-    s << endl;
+      s << ";" << endl;
+      s << endl;
+    }
 
     AbstractMetaFunctionList functions = meta_class->queryFunctions(
         AbstractMetaClass:: VirtualFunctions | AbstractMetaClass::WasVisible

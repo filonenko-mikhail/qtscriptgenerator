@@ -52,7 +52,7 @@ QString ShellImplGenerator::fileNameForClass(const AbstractMetaClass *meta_class
     return QString("qtscriptshell_%1.cpp").arg(meta_class->name());
 }
 
-static bool include_less_than(const Include &a, const Include &b) 
+static bool include_less_than(const Include &a, const Include &b)
 {
     return a.name < b.name;
 }
@@ -139,12 +139,15 @@ void ShellImplGenerator::write(QTextStream &s, const AbstractMetaClass *meta_cla
         s << ")" << " {}" << endl << endl;
     }
 
-    // write destructor
-    s << "QtScriptShell_" << meta_class->name() << "::"
-      << "~QtScriptShell_" << meta_class->name() << "()";
-    if (!meta_class->destructorException().isEmpty())
+    // if destructor is not private
+    if (!(meta_class->attributes() & AbstractMetaAttributes::FinalInCpp)) {
+      // write destructor
+      s << "QtScriptShell_" << meta_class->name() << "::"
+          << "~QtScriptShell_" << meta_class->name() << "()";
+      if (!meta_class->destructorException().isEmpty())
         s << " " << meta_class->destructorException();
-    s << " {}" << endl << endl;
+      s << " {}" << endl << endl;
+    }
 
     // write member functions
     for (int i = 0; i < functions.size(); ++i) {
