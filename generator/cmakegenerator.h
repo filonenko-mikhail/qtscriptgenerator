@@ -39,33 +39,19 @@
 **
 ****************************************************************************/
 
-#ifndef PRIGENERATOR_H
-#define PRIGENERATOR_H
+#ifndef CMAKEGENERATOR_H
+#define CMAKEGENERATOR_H
 
-#include "generator.h"
+#include "prigenerator.h"
 
 #include <QStringList>
 #include <QHash>
 
-struct Pri
+class CMakeGenerator : public PriGenerator
 {
-    QStringList headers;
-    QStringList sources;
-};
-
-class PriGenerator : public Generator
-{
-    Q_OBJECT
-
- public:
+  Q_OBJECT
+public:
     virtual void generate();
-
-    void addHeader(const QString &folder, const QString &header);
-    void addSource(const QString &folder, const QString &source);
-
- protected:
-    QHash<QString, Pri> priHash;
-
 };
-#endif // PRIGENERATOR_H
 
+#endif // CMAKEGENERATOR_H

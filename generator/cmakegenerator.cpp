@@ -39,33 +39,43 @@
 **
 ****************************************************************************/
 
-#ifndef PRIGENERATOR_H
-#define PRIGENERATOR_H
+#include "cmakegenerator.h"
+#include "reporthandler.h"
+#include "fileout.h"
 
-#include "generator.h"
-
-#include <QStringList>
-#include <QHash>
-
-struct Pri
+void CMakeGenerator::generate()
 {
-    QStringList headers;
-    QStringList sources;
-};
+  QHashIterator<QString, Pri> cmake(priHash);
+  while (cmake.hasNext()) {
+      cmake.next();
+      QStringList list = cmake.value().headers;
+      if (list.isEmpty())
+          continue;
 
-class PriGenerator : public Generator
-{
-    Q_OBJECT
+      QString folder = cmake.key();
+      FileOut file(m_out_dir + "/generated_cpp/" + folder + "/" + folder + ".cmake");
+      file.stream << "get_filename_component("+ folder+"_PATH ${CMAKE_CURRENT_LIST_FILE} PATH)\n";
+      file.stream << "list(APPEND QS_HEADERS \n";
+      qSort(list.begin(), list.end());
+      foreach (const QString &entry, list) {
+        file.stream << "${" + folder+"_PATH}/" << entry << " \n";
+      }
+      file.stream << ")";
 
- public:
-    virtual void generate();
+      file.stream << "\n";
+      file.stream << "list(APPEND QS_SOURCES \n";
+      list = cmake.value().sources;
+      qSort(list.begin(), list.end());
+      foreach (const QString &entry, list) {
+        file.stream << "${" + folder+"_PATH}/" << entry << " \n";
+      }
+      file.stream << "${" + folder+"_PATH}/" << folder << "_init.cpp\n";
+      file.stream << ")";
 
-    void addHeader(const QString &folder, const QString &header);
-    void addSource(const QString &folder, const QString &source);
+      if (file.done())
+          ++m_num_generated_written;
+      ++m_num_generated;
+  }
 
- protected:
-    QHash<QString, Pri> priHash;
-
-};
-#endif // PRIGENERATOR_H
-
+  PriGenerator::generate();
+}

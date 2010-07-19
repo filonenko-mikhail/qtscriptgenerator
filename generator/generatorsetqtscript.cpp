@@ -45,17 +45,18 @@
 #include "shellheadergenerator.h"
 #include "shellimplgenerator.h"
 #include "docgenerator.h"
+#include "cmakegenerator.h"
 
 GeneratorSet *GeneratorSet::getInstance() {
     return new GeneratorSetQtScript();
 }
 
-GeneratorSetQtScript::GeneratorSetQtScript() 
+GeneratorSetQtScript::GeneratorSetQtScript()
 {}
 
 QString GeneratorSetQtScript::usage() {
     QString usage =
-        "QtScript:\n" 
+        "QtScript:\n"
         "  --nothing-to-report-yet                   \n";
 
     return usage;
@@ -73,14 +74,14 @@ void GeneratorSetQtScript::buildModel(const QString pp_file) {
 }
 
 void GeneratorSetQtScript::dumpObjectTree() {
- 
+
 }
 
 QString GeneratorSetQtScript::generate() {
     AbstractMetaClassList classes = builder.classesTopologicalSorted();
     QSet<QString> declaredTypeNames = builder.qtMetaTypeDeclaredTypeNames();
 
-    PriGenerator priGenerator;
+    CMakeGenerator priGenerator;
     priGenerator.setOutputDirectory(outDir);
 
     SetupGenerator setupGenerator;
